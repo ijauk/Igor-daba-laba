@@ -14,6 +14,10 @@ class Job_posting extends Model
     }
     public function jobPosition()
     {
-        return $this->belongsTo(JobPosition::class, 'job_position_id');
+        return $this->belongsTo(Job_position::class, 'job_position_id');
+    }
+    public function candidates()
+    {
+        return $this->belongsToMany(Candidate::class, 'candidate_postings', 'posting_id', 'candidate_id');
     }
 }

@@ -32,7 +32,15 @@
             <label for="deadLine" class="form-label">Rok za prijavu</label>
             <input type="datetime-local" class="form-control" name="deadLine" id="deadLine">
         </div>
-
+        <div class="mb-3">
+            <label for="education_id" class="form-label">Obrazovna sprema</label>
+            <select class="form-select" id="education_id" name="education_id" required>
+                <option value="" disabled selected>Odaberite obrazovnu spremu</option>
+                @foreach($educations as $education)
+                    <option value="{{ $education->id }}">{{ $education->abbreviation }} - {{ $education->remark }}</option>
+                @endforeach
+            </select>
+        </div>
         <div class="mb-3 form-check">
             <input type="checkbox" class="form-check-input" id="is_valid" name="is_valid" value="1">
             <label class="form-check-label" for="is_valid">Oglas je važeći</label>

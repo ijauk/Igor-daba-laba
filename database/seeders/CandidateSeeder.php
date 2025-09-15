@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Candidate;
 
+
 class CandidateSeeder extends Seeder
 {
     /**
@@ -27,5 +28,6 @@ class CandidateSeeder extends Seeder
             'last_name' => 'Mirić'
 
         ]);
+        Candidate::factory()->count(50)->create();
     }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Job_posting;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-
+use App\Models\Education;
 
 class JobPostingController extends Controller
 {
@@ -30,7 +30,8 @@ class JobPostingController extends Controller
         if (!Auth::check()) {
             return redirect()->route('login');
         }
-        return view('jobpostings.create');
+        $educations = Education::all();
+        return view('jobpostings.create', compact('educations'));
     }
 
     /**
@@ -45,7 +46,8 @@ class JobPostingController extends Controller
                 'description' => 'required|string',
                 'posted_at' => 'required|date',
                 'expires_at' => 'required|date|after:posted_at',
-                'deadLine' => 'nullable|date|after:posted_at'
+                'deadLine' => 'nullable|date|after:posted_at',
+                'job_position_id' => 'nullable|exists:Job_positions,id'
 
             ],
             [
