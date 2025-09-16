@@ -39,7 +39,7 @@ class JobPostingController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
+        //dd($request->all());
         $validatedData = $request->validate(
             [
                 'title' => 'required|string|max:255',
@@ -65,7 +65,7 @@ class JobPostingController extends Controller
                 'deadLine.after' => 'Rok za prijavu mora biti nakon datuma objave',
             ]
         );
-
+        dd($validatedData);
         Job_posting::create([
             'title' => $validatedData['title'],
             'description' => $validatedData['description'],

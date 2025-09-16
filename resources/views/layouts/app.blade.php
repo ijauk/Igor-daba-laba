@@ -4,6 +4,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+
         <title>@yield('title', 'Moja aplikacija')</title>
 
         {{-- Bootstrap CSS (CDN) --}}
@@ -11,8 +12,10 @@
 
         {{-- Dodatni CSS --}}
         @stack('styles')
+
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        {{-- Livewire CSS --}}
         @livewireStyles
-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     </head>
 
     <body class="bg-light">
@@ -27,15 +30,16 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url(path: '/') }}">Početna</a>
+                            {{-- mala napomena: url() ne treba named argument "path:", dovoljno je url('/') --}}
+                            <a class="nav-link" href="{{ url('/') }}">Početna</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/prijava') }}">Prijava</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Oglasi
-                            </a>
+                            Oglasi
+                        </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" href="{{ url('/jobpostings') }}">Popis oglasa</a></li>
                                 <li><a class="dropdown-item" href="{{ url('/jobpostings/create') }}">Postavi oglas</a>
@@ -46,9 +50,6 @@
                 </div>
             </div>
         </nav>
-        <h4>
-            <title>@yield('title')</title>
-        </h4>
 
         {{-- Glavni sadržaj --}}
         <div class="container">
@@ -62,7 +63,24 @@
 
         {{-- Bootstrap JS --}}
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-        {{-- Dodatni JS --}}
+
+        {{-- Livewire JS --}}
+        @livewireScripts
+        <script>
+            document.addEventListener('livewire:init', () => {
+                console.log('✅ Livewire init OK');
+            });
+        </script>
+        {{-- Učitaj Alpine tek nakon što Livewire najavi da je spreman --}}
+        <script>
+            window.deferLoadingAlpine = (callback) => {
+                // ako Livewire već postoji i tek će emitirati event:
+                document.addEventListener('livewire:init', callback);
+            }
+        </script>
+        <!-- <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script> -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css">
+        <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
         @stack('scripts')
     </body>
 

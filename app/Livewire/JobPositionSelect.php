@@ -3,34 +3,77 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use App\Models\Job_position;
 use Livewire\WithPagination;
 
 class JobPositionSelect extends Component
 {
     use WithPagination;
-    // string koji se automatski puni dok korisnik tipka
+
     public string $search = '';
-
-    // ID trenutno odabranog zapisa
     public ?int $selectedId = null;
+    public string $selectedLabel = '';
+    public bool $isOpen = false; // kontrolira vidljivost liste (Alpine + entangle)
+    public int $perPage = 100;
 
-    // Ime odabranog zapisa koji se prikazuje u input polju nakon odabira
-    public string $selectedLablel = '';
+    protected $queryString = ['search']; // opcionalno: zadrži search u URL-u
 
-    // služi za prikazivanje/zatvaranje dropdown liste
-    public bool $open = false;
+    public function mount(?int $selectedId = null): void
+    {
+        if ($selectedId) {
+            $this->selectedId = $selectedId;
+            $this->selectedLabel = Job_position::find($selectedId)?->name ?? '';
+        }
+    }
 
-    // broj zapisa po stranici
-    public int $perPage = 5;
+    public function updatedSearch(): void
+    {
+        $this->resetPage();
+        $this->isOpen = true;
+    }
 
-    // omogućava da se parametar "search" vidi u URL-u i da radi kod refresh stranice
-    public $queryString = [
-        'search'
-    ];
+    public function select(int $id): void
+    {
+        $jp = Job_position::find($id);
+        if ($jp) {
+            $this->selectedId = $jp->id;
+            $this->selectedLabel = $jp->name;
+            $this->isOpen = false;
+            // po želji emitiraj event:
+            // $this->dispatch('job-position-selected', id: $jp->id, label: $jp->name);
+        }
+    }
+
+    public function clear(): void
+    {
+        $this->selectedId = null;
+        $this->selectedLabel = '';
+        $this->search = '';
+        $this->resetPage();
+        $this->isOpen = false;
+    }
+
+    public function getResultsProperty()
+    {
+        return Job_position::query()
+            ->when(
+                $this->search,
+                fn($q) =>
+                $q->where('name', 'like', '%' . $this->search . '%')
+            )
+            ->orderBy('name')
+            ->paginate($this->perPage);
+    }
+
+    public function loadMore(): void
+    {
+        $this->perPage += 10;
+    }
 
     public function render()
     {
-
-        return view('livewire.job-position-select');
+        return view('livewire.job-position-select', [
+            'results' => $this->results, // accessor iz getResultsProperty()
+        ]);
     }
 }
