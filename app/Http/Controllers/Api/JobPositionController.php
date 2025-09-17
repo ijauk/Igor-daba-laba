@@ -15,7 +15,7 @@ class JobPositionController extends Controller
      */
     public function index(Request $request)
     {
-
+        // select2 i tomselect šalju query parametre q (search term), page (broj stranice) i per_page (broj rezultata po stranici)
         $term = $request->get('q');
         $page = (int) $request->get('page', 1);
         $perPage = (int) $request->get('per_page', 10);
@@ -39,25 +39,5 @@ class JobPositionController extends Controller
         ]);
     }
 
-    // GET /api/job-positions?q=man&page=1
-    public function index2(Request $request)
-    {
-        $term = $request->get('q');
-        $page = (int) $request->get('page', 1);
-        $perPage = (int) $request->get('per_page', 10);
 
-        $query = Job_position::query()
-            ->when($term, fn($q, $term) => $q->where('name', 'like', "%{$term}%"))
-            ->orderBy('name');
-
-        $paginator = $query->paginate($perPage, ['*'], 'page', $page);
-
-        return response()->json([
-            'results' => $paginator->getCollection()->map(fn($jp) => [
-                'id' => $jp->id,
-                'text' => $jp->name,
-            ]),
-            'pagination' => ['more' => $paginator->hasMorePages()],
-        ]);
-    }
 }

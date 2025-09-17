@@ -14,3 +14,7 @@ Route::resource('jobpostings', App\Http\Controllers\JobPostingController::class)
 
 // API ruta za dohvat radnih pozicija (za Select2/TomSelect)
 Route::get('/api/job-positions', [App\Http\Controllers\Api\JobPositionController::class, 'index']);
+
+
+// API ruta za dohvat zaposlenika (za Select2/TomSelect)
+Route::get('/api/employees', [App\Http\Controllers\Api\EmployeeController::class, 'index']);

@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Job_posting;
+use App\Models\Job_position;
+use App\Models\Employee;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Education;
+use Carbon\Carbon;
 
 class JobPostingController extends Controller
 {
@@ -19,6 +22,7 @@ class JobPostingController extends Controller
         }
 
         $job_postings = Job_posting::all();
+
         return view('jobpostings.index', compact('job_postings'));
     }
 
@@ -30,8 +34,40 @@ class JobPostingController extends Controller
         if (!Auth::check()) {
             return redirect()->route('login');
         }
+
         $educations = Education::all();
-        return view('jobpostings.create', compact('educations'));
+
+        // Inicijalno odabrana radna pozicija (ako je vraćeno iz validacije)
+
+        $selectedJobPosition = null;
+        if (old('job_position_id')) {
+
+            $selectedJobPosition = Job_position::find(old('job_position_id'));
+        }
+
+        $selectedEmployee = null;
+        if (old('employee_id')) {
+            $selectedEmployee = Employee::find(old('employee_id'));
+        }
+
+        $selectedDate = null;
+        if (old('posted_at')) {
+            $selectedDate = old('posted_at');
+        }
+
+        $selectedExpiresAt = null;
+        if (old('expires_at')) {
+            $selectedExpiresAt = old('expires_at');
+        }
+
+        $selectedDeadLine = null;
+        if (old('deadLine')) {
+            $selectedDeadLine = old('deadLine');
+        }
+
+        return view('jobpostings.create', compact('educations', 'selectedJobPosition', 'selectedEmployee', 'selectedDate', 'selectedExpiresAt', 'selectedDeadLine'));
+
+
     }
 
     /**
@@ -42,30 +78,56 @@ class JobPostingController extends Controller
         //dd($request->all());
         $validatedData = $request->validate(
             [
-                'title' => 'required|string|max:255',
-                'description' => 'required|string',
-                'posted_at' => 'required|date',
-                'expires_at' => 'required|date|after:posted_at',
-                'deadLine' => 'nullable|date|after:posted_at',
-                'job_position_id' => 'nullable|exists:Job_positions,id'
+                'title' => ['required', 'string', 'max:255'],
+                'description' => ['required', 'string'],
 
+                // Tempus Dominus formats coming from the inputs:
+                'posted_at' => ['required', 'date_format:d.m.Y H:i'],
+                'expires_at' => ['required', 'date_format:d.m.Y', 'after_or_equal:posted_at'],
+                'deadLine' => ['required', 'date_format:d.m.Y H:i', 'after_or_equal:posted_at'],
+
+                'education_id' => ['required', 'integer', 'exists:educations,id'],
+                'job_position_id' => ['required', 'integer', 'exists:job_positions,id'],
+                'is_valid' => ['nullable', 'boolean'],
             ],
             [
-                'title.required' => 'Molimo unesite naslov',
-                'title.string' => 'Naslov mora biti tekst',
-                'title.max' => 'Naslov može imati maksimalno 255 znakova',
-                'description.required' => 'Molimo unesite opis',
-                'description.string' => 'Opis mora biti tekst',
-                'posted_at.required' => 'Molimo unesite datum objave',
-                'posted_at.date' => 'Datum objave nije u ispravnom formatu',
-                'expires_at.required' => 'Molimo unesite datum isteka',
-                'expires_at.date' => 'Datum isteka nije u ispravnom formatu',
-                'expires_at.after' => 'Datum isteka mora biti nakon datuma objave',
-                'deadLine.date' => 'Rok za prijavu nije u ispravnom formatu',
-                'deadLine.after' => 'Rok za prijavu mora biti nakon datuma objave',
+                'title.required' => 'Molimo unesite naslov.',
+                'title.string' => 'Naslov mora biti tekst.',
+                'title.max' => 'Naslov može imati maksimalno 255 znakova.',
+
+                'description.required' => 'Molimo unesite opis.',
+                'description.string' => 'Opis mora biti tekst.',
+
+                'posted_at.required' => 'Molimo unesite datum objave.',
+                'posted_at.date_format' => 'Datum objave mora biti u formatu dd.mm.yyyy HH:mm.',
+
+                'expires_at.required' => 'Molimo unesite datum isteka.',
+                'expires_at.date_format' => 'Datum isteka mora biti u formatu dd.mm.yyyy.',
+                'expires_at.after_or_equal' => 'Datum isteka mora biti isti ili nakon datuma objave.',
+
+                'deadLine.required' => 'Molimo unesite rok za prijavu.',
+                'deadLine.date_format' => 'Rok za prijavu mora biti u formatu dd.mm.yyyy HH:mm.',
+                'deadLine.after_or_equal' => 'Rok za prijavu mora biti isti ili nakon datuma objave.',
+
+                'education_id.required' => 'Molimo odaberite obrazovnu spremu.',
+                'education_id.exists' => 'Odabrana obrazovna sprema ne postoji.',
+
+                'job_position_id.required' => 'Molimo odaberite poziciju.',
+                'job_position_id.exists' => 'Odabrana pozicija ne postoji.',
+
+                'is_valid.boolean' => 'Polje važeći mora biti boolean vrijednost.',
             ]
         );
-        dd($validatedData);
+
+        // Pretvori u standardne formate prihvatljive za DB
+        $postedAt = Carbon::createFromFormat('d.m.Y H:i', $validatedData['posted_at']);
+        $expiresAt = Carbon::createFromFormat('d.m.Y', $validatedData['expires_at']);
+        $deadLine = Carbon::createFromFormat('d.m.Y H:i', $validatedData['deadLine']);
+
+        $validatedData['posted_at'] = $postedAt->format('Y-m-d H:i:s');
+        $validatedData['expires_at'] = $expiresAt->format('Y-m-d');
+        $validatedData['deadLine'] = $deadLine->format('Y-m-d H:i:s');
+
         Job_posting::create([
             'title' => $validatedData['title'],
             'description' => $validatedData['description'],

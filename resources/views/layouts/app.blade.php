@@ -7,13 +7,28 @@
 
         <title>@yield('title', 'Moja aplikacija')</title>
 
-        {{-- Bootstrap CSS (CDN) --}}
+        {{-- ===== CSS (vendor first) ===== --}}
+        {{-- Bootstrap 5 --}}
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        {{-- Dodatni CSS --}}
+        {{-- Select2 + Bootstrap 5 theme --}}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+        <link rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css">
+
+        {{-- Tempus Dominus (datetime picker) --}}
+        <link rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6/dist/css/tempus-dominus.min.css" />
+
+        {{-- Bootstrap Icons (optional, for calendar icon) --}}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+        {{-- Page-specific styles (after vendor to allow overrides) --}}
         @stack('styles')
 
+        {{-- CSRF for AJAX --}}
         <meta name="csrf-token" content="{{ csrf_token() }}">
+
         {{-- Livewire CSS --}}
         @livewireStyles
     </head>
@@ -30,7 +45,6 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            {{-- mala napomena: url() ne treba named argument "path:", dovoljno je url('/') --}}
                             <a class="nav-link" href="{{ url('/') }}">Početna</a>
                         </li>
                         <li class="nav-item">
@@ -61,8 +75,22 @@
             &copy; {{ date('Y') }} Moja aplikacija
         </footer>
 
-        {{-- Bootstrap JS --}}
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        {{-- ===== JS (vendor libs first, then Livewire, then page scripts) ===== --}}
+        {{-- jQuery (required by Select2) --}}
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+
+        {{-- Select2 --}}
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.full.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/hr.js"></script>
+
+        {{-- Popper UMD (required by both Bootstrap and Tempus Dominus) --}}
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+
+        {{-- Bootstrap 5 (no bundle; Popper loaded above) --}}
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+
+        {{-- Tempus Dominus --}}
+        <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6/dist/js/tempus-dominus.min.js"></script>
 
         {{-- Livewire JS --}}
         @livewireScripts
@@ -71,16 +99,8 @@
                 console.log('✅ Livewire init OK');
             });
         </script>
-        {{-- Učitaj Alpine tek nakon što Livewire najavi da je spreman --}}
-        <script>
-            window.deferLoadingAlpine = (callback) => {
-                // ako Livewire već postoji i tek će emitirati event:
-                document.addEventListener('livewire:init', callback);
-            }
-        </script>
-        <!-- <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script> -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css">
-        <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
+        {{-- Page-specific scripts (can rely on all vendor libs above) --}}
         @stack('scripts')
     </body>
 
