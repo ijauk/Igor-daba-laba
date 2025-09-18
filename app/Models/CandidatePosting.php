@@ -16,7 +16,7 @@ class CandidatePosting extends Model
     }
     public function posting()
     {
-        return $this->belongsTo(Job_posting::class);
+        return $this->belongsTo(JobPosting::class);
     }
 
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\JobPosition;
 use Illuminate\Http\Request;
 use App\Models\Job_position;
 
@@ -20,7 +21,7 @@ class JobPositionController extends Controller
         $page = (int) $request->get('page', 1);
         $perPage = (int) $request->get('per_page', 10);
 
-        $query = Job_position::query()
+        $query = JobPosition::query()
             ->when($term, function ($q, $term) { // ovaj when je kao if, ako postoji search term, dodaj where
                 $q->where('name', 'like', "%{$term}%");
             })

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Job_posting;
-use App\Models\Job_position;
+use App\Models\JobPosting;
+use App\Models\JobPosition;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -21,7 +21,7 @@ class JobPostingController extends Controller
             return redirect()->route('login');
         }
 
-        $job_postings = Job_posting::all();
+        $job_postings = JobPosting::all();
 
         return view('jobpostings.index', compact('job_postings'));
     }
@@ -42,7 +42,7 @@ class JobPostingController extends Controller
         $selectedJobPosition = null;
         if (old('job_position_id')) {
 
-            $selectedJobPosition = Job_position::find(old('job_position_id'));
+            $selectedJobPosition = JobPosition::find(old('job_position_id'));
         }
 
         $selectedEmployee = null;
@@ -128,7 +128,7 @@ class JobPostingController extends Controller
         $validatedData['expires_at'] = $expiresAt->format('Y-m-d');
         $validatedData['deadLine'] = $deadLine->format('Y-m-d H:i:s');
 
-        Job_posting::create([
+        JobPosting::create([
             'title' => $validatedData['title'],
             'description' => $validatedData['description'],
             'posted_at' => $validatedData['posted_at'],
@@ -144,23 +144,48 @@ class JobPostingController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Job_posting $job_posting)
+    public function show(JobPosting $job_posting)
     {
-        //
+        dd($job_posting);
+        return view('jobpostings.show', compact('job_posting'));
+
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Job_posting $job_posting)
+    public function edit(JobPosting $jobposting)
     {
-        //
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        $educations = Education::all();
+
+
+        $selectedJobPosition = $jobposting->job_position_id
+            ? JobPosition::find($jobposting->job_position_id)
+            : null;
+
+        $selectedEmployee = $jobposting->employee_id
+            ? Employee::find($jobposting->employee_id)
+            : null;
+
+        $selectedDate = $jobposting->posted_at->format('d.m.Y H:i');
+        $selectedExpiresAt = $jobposting->expires_at->format('d.m.Y');
+        $selectedDeadLine = $jobposting->deadline->format('d.m.Y H:i');
+
+
+
+        return view('jobpostings.edit', compact('jobposting', 'educations', 'selectedDate', 'selectedExpiresAt', 'selectedDeadLine', 'selectedJobPosition', 'selectedEmployee'));
+
+
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Job_posting $job_posting)
+    public function update(Request $request, JobPosting $jobposting)
     {
         //
     }
@@ -168,7 +193,7 @@ class JobPostingController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Job_posting $job_posting)
+    public function destroy(JobPosting $job_posting)
     {
         //
     }

@@ -16,6 +16,6 @@ class Employee extends Model
     }
     public function jobPostings()
     {
-        return $this->hasMany(Job_posting::class);
+        return $this->hasMany(JobPosting::class);
     }
 }
