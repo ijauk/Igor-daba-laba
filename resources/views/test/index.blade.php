@@ -14,54 +14,137 @@
         @enderror
     </div>
 @endsection
-
-@push('scripts')
+@pushOnce('scripts')
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Defensive: ensure TomSelect is available
-            if (typeof TomSelect === 'undefined') {
-                console.error('TomSelect JS nije učitan. Provjeri <script> include i redoslijed.');
-                return;
+        (function () {
+            function initTomSelectJob() {
+                const el = document.getElementById('job_position_id');
+                if (!el) return;
+
+                // Ako je već inicijaliziran (npr. zbog ponovnog mounta), uništi staru instancu
+                if (el.tomselect) {
+                    try { el.tomselect.destroy(); } catch (e) { }
+                }
+
+                if (typeof TomSelect === 'undefined') {
+                    console.error('TomSelect nije učitan. Učitaj tom-select.complete.min.js prije ovog bloka.');
+                    return;
+                }
+
+                // Paging state (Select2-style)
+                let paging = {
+                    query: '',
+                    page: 1,
+                    more: false,
+                    loadingMore: false
+                };
+
+                function makeUrl(base, q, page) {
+                    const u = new URL(base, window.location.origin);
+                    if (q && q.length) u.searchParams.set('q', q);
+                    if (page) u.searchParams.set('page', String(page));
+                    return u.pathname + u.search;
+                }
+
+                const ts = new TomSelect(el, {
+                    valueField: 'id',
+                    labelField: 'text',
+                    searchField: 'text',
+                    create: false,
+                    hideSelected: true,
+                    openOnFocus: true,
+                    closeAfterSelect: true,
+                    dropdownParent: 'body', // izbjegni overflow/stacking probleme u BS5
+                    preload: 'focus',       // predučitaj kad dobije fokus
+                    shouldLoad: function (query) { return true; }, // dopusti load i bez queryja
+                    load: function (query, callback) {
+                        const base = '/api/job-positions';
+                        // reset paging if query changed
+                        if (query !== paging.query) {
+                            paging.query = query || '';
+                            paging.page = 1;
+                            paging.more = false;
+                        }
+                        const url = makeUrl(base, paging.query, 1);
+                        fetch(url)
+                            .then(r => r.ok ? r.json() : Promise.reject(r))
+                            .then(json => {
+                                const items = Array.isArray(json?.results) ? json.results : [];
+                                paging.more = !!(json && json.pagination && json.pagination.more);
+                                callback(items);
+                            })
+                            .catch(() => callback());
+                    },
+                    render: {
+                        no_results: function () {
+                            return '<div class="no-results py-2 px-3 text-muted">Nema rezultata</div>';
+                        }
+                    }
+                });
+
+                // Open dropdown when focusing and wire up infinite scroll
+                const dropdownEl = ts.dropdown_content;
+
+                function loadMoreIfNeeded() {
+                    if (!paging.more || paging.loadingMore) return;
+                    const nearBottom = dropdownEl.scrollTop + dropdownEl.clientHeight >= dropdownEl.scrollHeight - 10;
+                    if (!nearBottom) return;
+                    paging.loadingMore = true;
+                    const nextPage = paging.page + 1;
+                    const base = '/api/job-positions';
+                    const nextUrl = makeUrl(base, paging.query, nextPage);
+                    fetch(nextUrl)
+                        .then(r => r.ok ? r.json() : Promise.reject(r))
+                        .then(json => {
+                            const items = Array.isArray(json?.results) ? json.results : [];
+                            if (items.length) {
+                                ts.addOptions(items);
+                                ts.refreshOptions(false);
+                            }
+                            paging.more = !!(json && json.pagination && json.pagination.more);
+                            if (items.length) paging.page = nextPage;
+                        })
+                        .finally(() => { paging.loadingMore = false; });
+                }
+
+                // Rebind scroll each time dropdown opens
+                ts.on('dropdown_open', () => {
+                    // reset scroll
+                    dropdownEl.scrollTop = 0;
+                    dropdownEl.removeEventListener('scroll', loadMoreIfNeeded);
+                    dropdownEl.addEventListener('scroll', loadMoreIfNeeded);
+                });
+
+                // Keep paging in sync with search typing
+                ts.on('type', (str) => {
+                    // if query changes, reset page so the next load() starts from page 1
+                    if (str !== paging.query) {
+                        paging.query = str || '';
+                        paging.page = 1;
+                        paging.more = false;
+                    }
+                });
+
+                // Izloži za debug
+                window.tsJobPosition = ts;
             }
 
-            const el = document.getElementById('job_position_id');
-            if (!el) return;
-
-            // Inicijalizacija s postavkama koje rješavaju probleme s Bootstrap 5 / modalima
-            const ts = new TomSelect(el, {
-                valueField: 'id',
-                labelField: 'name',
-                searchField: 'name',
-                maxOptions: 50,
-                openOnFocus: true,
-                closeAfterSelect: true,
-                // ključni fix: dropdown izvan roditelja (izbjegava overflow:hidden i stacking konteks)
-                dropdownParent: 'body',
-                load: function (query, callback) {
-                    if (!query.length) return callback();
-                    fetch(`/api/job-positions?q=${encodeURIComponent(query)}`)
-                        .then(r => r.json())
-                        .then(json => callback(json.data || []))
-                        .catch(() => callback());
-                }
-            });
-
-            // Izloži za brzi debug u konzoli
-            window.tsJobPosition = ts;
-
-            // Ako je dropdown možda ispod modala, osiguraj z-index i reflow na focus
-            ts.on('focus', () => {
-                ts.refreshOptions(false);
-            });
-        });
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initTomSelectJob, { once: true });
+            } else {
+                initTomSelectJob();
+            }
+        })();
     </script>
-@endpush
+@endPushOnce
 
-@push('styles')
+
+
+@pushOnce('styles')
     <style>
         /* Z-index iznad Bootstrap modala/backdropa; prilagodi po potrebi */
         .ts-dropdown {
             z-index: 2000 !important;
         }
     </style>
-@endpush
+@endPushOnce
