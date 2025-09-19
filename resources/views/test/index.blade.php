@@ -13,6 +13,18 @@
             <div class="text-danger small mt-1">{{ $message }}</div>
         @enderror
     </div>
+    <h1>Test Page</h1>
+    <div class="mb-3">
+        <label for="job_position_id2" class="form-label">Pozicija2</label>
+        <select class="w-100" id="job_position_id2" name="job_position_id2" placeholder="Traži i odaberi poziciju…">
+            @if(old('job_position_id') && isset($selectedJobPosition))
+                <option value="{{ old('job_position_id') }}" selected>{{ $selectedJobPosition->name }}</option>
+            @endif
+        </select>
+        @error('job_position_id2')
+            <div class="text-danger small mt-1">{{ $message }}</div>
+        @enderror
+    </div>
 @endsection
 @pushOnce('scripts')
     <script>
@@ -138,7 +150,28 @@
     </script>
 @endPushOnce
 
-
+@push('scripts')
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            new TomSelect("#job_position_id2", {
+                valueField: 'id',
+                labelField: 'text',
+                searchField: 'text',
+                maxOptions: 50,
+                load: function (query, callback) {
+                    if (!query.length) return callback();
+                    fetch(`/api/job-positions?q=${encodeURIComponent(query)}`)
+                        .then(response => response.json())
+                        .then(json => {
+                            callback(json.data); // očekuješ {id, name}
+                        }).catch(() => {
+                            callback();
+                        });
+                }
+            });
+        });
+    </script>
+@endpush
 
 @pushOnce('styles')
     <style>
