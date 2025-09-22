@@ -10,7 +10,7 @@ use App\Http\Controllers\JobPostingController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/prijava', [App\Http\Controllers\AuthController::class, 'index'])->name('login');
 Route::post('/obrada', [App\Http\Controllers\AuthController::class, 'obrada']);
-
+Route::post('/odjava', [App\Http\Controllers\AuthController::class, 'odjava'])->name('logout');
 // rute za job_postings
 Route::resource('jobpostings', JobPostingController::class);
 

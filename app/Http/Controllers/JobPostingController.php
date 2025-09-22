@@ -18,7 +18,7 @@ class JobPostingController extends Controller
     public function index()
     {
         if (!Auth::check()) {
-            return redirect()->route('login');
+                return redirect()->guest(route('login'));
         }
 
         $job_postings = JobPosting::all();
@@ -32,7 +32,7 @@ class JobPostingController extends Controller
     public function create()
     {
         if (!Auth::check()) {
-            return redirect()->route('login');
+                return redirect()->guest(route('login'));
         }
 
         $educations = Education::all();
@@ -157,7 +157,7 @@ class JobPostingController extends Controller
     public function edit(JobPosting $jobposting)
     {
         if (!Auth::check()) {
-            return redirect()->route('login');
+               return redirect()->guest(route('login'));
         }
 
         $educations = Education::all();

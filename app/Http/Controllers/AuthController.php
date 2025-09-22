@@ -34,4 +34,14 @@ class AuthController extends Controller
             return back()->withErrors('Molimo pokušajte ponovno')->onlyInput('email');
         }
     }
+    public function odjava(Request $request)
+{
+    Auth::logout();
+
+    // poništi session i regeneriraj CSRF token
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect('/prijava');
+}
 }
