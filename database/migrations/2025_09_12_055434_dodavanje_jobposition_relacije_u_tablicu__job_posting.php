@@ -11,8 +11,12 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('job_postings', function (Blueprint $table) {
-
-            $table->foreign('job_position_id')->references('id')->on('job_positions')->onDelete('set null');
+            if (!Schema::hasColumn('job_postings', 'job_position_id')) {
+                $table->foreignId('job_position_id')
+                    ->nullable()
+                    ->constrained('job_positions')
+                    ->nullOnDelete();
+            }
         });
     }
 
