@@ -44,14 +44,10 @@ jobs:
   deploy:
     needs: laravel-tests
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
     steps:
-      - name: Verify deployment secrets
-        run: |
-          : "${{ secrets.SSH_HOST?Missing secret: SSH_HOST }}"
-          : "${{ secrets.SSH_USER?Missing secret: SSH_USER }}"
-          : "${{ secrets.SSH_PRIVATE_KEY?Missing secret: SSH_PRIVATE_KEY }}"
       - name: Deploy to server
+        # koristimo gotovu, popularnu akciju za SSH
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -62,6 +58,6 @@ jobs:
             git pull origin main
             composer install --no-dev --optimize-autoloader
             php artisan migrate --force
-            php artisan view:cache
             php artisan config:cache
             php artisan route:cache
+            php artisan view:cache
