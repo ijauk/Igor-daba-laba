@@ -10,8 +10,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table('Job_positions', function (Blueprint $table) {
-            // Add new columns to the Job_positions table
+        Schema::table('job_positions', function (Blueprint $table) {
+
             $table->string('name');
             $table->text('description')->nullable();
             $table->decimal('min_salary', 10, 2)->nullable();
@@ -27,7 +27,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('Job_positions', function (Blueprint $table) {
+        Schema::table('j
+        ob_positions', function (Blueprint $table) {
             $table->dropColumn(['name', 'min_salary', 'max_salary', 'is_active']);
         });
     }
