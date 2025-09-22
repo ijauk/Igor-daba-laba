@@ -44,7 +44,13 @@ jobs:
   deploy:
     needs: laravel-tests
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
+      - name: Verify deployment secrets
+        run: |
+          : "${{ secrets.SSH_HOST?Missing secret: SSH_HOST }}"
+          : "${{ secrets.SSH_USER?Missing secret: SSH_USER }}"
+          : "${{ secrets.SSH_PRIVATE_KEY?Missing secret: SSH_PRIVATE_KEY }}"
       - name: Deploy to server
         uses: appleboy/ssh-action@master
         with:
