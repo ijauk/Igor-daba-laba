@@ -39,7 +39,7 @@
         {{-- Navbar --}}
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
             <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">Mala jedva vidljijva promjena</a>
+                <a class="navbar-brand" href="{{ url('/') }}">Mala jedva vidljijva promjena kad sam majmun</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
