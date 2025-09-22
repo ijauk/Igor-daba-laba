@@ -23,7 +23,7 @@ jobs:
       - name: Copy .env file
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
       - name: Install dependencies
-        run: ccomposer install -q --no-progress --prefer-dist --optimize-autoloader
+        run: composer install -q --no-progress --prefer-dist --optimize-autoloader
       - name: Generate application key
         run: php artisan key:generate
       - name: Create database
