@@ -2,4 +2,5 @@
 
 @section('content')
     <h1>I kaj sad</h1>
+    <p>Okidanje pipeline-a</p>
 @endsection
