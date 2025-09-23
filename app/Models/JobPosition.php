@@ -13,4 +13,8 @@ class JobPosition extends Model
     {
         return $this->hasMany(JobPosting::class, 'job_position_id');
     }
+    public function organizationalUnit()
+    {
+        return $this->hasOne(OrganizationalUnit::class, 'id', 'organizational_unit_id');
+    }
 }

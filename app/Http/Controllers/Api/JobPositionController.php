@@ -22,18 +22,32 @@ class JobPositionController extends Controller
             $page = (int) $request->get('page', 1);
             $perPage = (int) $request->get('per_page', 10);
 
-            $query = JobPosition::query()
-                ->when($term, function ($q, $term) { // ovaj when je kao if, ako postoji search term, dodaj where
+            // $query = JobPosition::query()
+            //     ->when($term, function ($q, $term) { // ovaj when je kao if, ako postoji search term, dodaj where
+            //         $q->where('name', 'like', "%{$term}%");
+            //     })
+            //     ->orderBy('name');
+
+            // učitavanje podataka job position zajedno sa organizational unit za detaljniji
+            // prikaz u select2/tomselect
+         
+            $query= JobPosition::query()
+            ->with('organizationalUnit') // eager loading relacije organizationalUnit
+            ->when($term, function ($q, $term) { // ovaj when je kao if, ako postoji search term, dodaj where
+                $q->where('name', 'like', "%{$term}%")
+                ->orWhereHas('organizationalUnit', function ($q) use ($term) {
                     $q->where('name', 'like', "%{$term}%");
-                })
-                ->orderBy('name');
+                });
+            })
+            ->orderBy('name');
+
             // a paginate je laravel metoda za paginaciju
             $paginator = $query->paginate($perPage, ['*'], 'page', $page);
 
             return response()->json([
                 'results' => $paginator->getCollection()->map(fn($jp) => [ //mapira podakte u format koji Select2/TomSelect očekuje 
                     'id' => $jp->id,
-                    'text' => $jp->name,
+                    'text' => $jp->organizationalUnit->code . '.' . $jp->job_subnumber . '.' . $jp->incumbent_subnumber . ' ' . $jp->name . ($jp->organizationalUnit ? ' (' . $jp->organizationalUnit->name . ')' : ''),
                 ]),
                 'pagination' => [
                     'more' => $paginator->hasMorePages(),

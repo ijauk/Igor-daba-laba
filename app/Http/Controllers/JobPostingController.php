@@ -135,7 +135,7 @@ class JobPostingController extends Controller
             'expires_at' => $validatedData['expires_at'],
             'deadline' => $validatedData['deadLine'],
             'is_valid' => $validatedData['is_valid'] ?? false,
-            'employee_id' => $validatedData['employee_id'],
+            'employee_id' => $request['employee_id'],
             'job_position_id' => $validatedData['job_position_id'],
             'education_id' => $validatedData['education_id']
 
@@ -178,7 +178,7 @@ class JobPostingController extends Controller
         $selectedExpiresAt = $jobposting->expires_at?->format('d.m.Y');
         $selectedDeadLine = $jobposting->deadline?->format('d.m.Y H:i');
 
-        dd($selectedJobPosition);
+
 
         return view('jobpostings.edit', compact('jobposting', 'educations', 'selectedDate', 'selectedExpiresAt', 'selectedDeadLine', 'selectedJobPosition', 'selectedEmployee'));
 
