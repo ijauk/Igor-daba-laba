@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\JobPosition;
 use Livewire\Component;
 use App\Models\Job_position;
 use Livewire\WithPagination;
@@ -22,7 +23,7 @@ class JobPositionSelect extends Component
     {
         if ($selectedId) {
             $this->selectedId = $selectedId;
-            $this->selectedLabel = Job_position::find($selectedId)?->name ?? '';
+            $this->selectedLabel = JobPosition::find($selectedId)?->name ?? '';
         }
     }
 
@@ -34,7 +35,7 @@ class JobPositionSelect extends Component
 
     public function select(int $id): void
     {
-        $jp = Job_position::find($id);
+        $jp = JobPosition::find($id);
         if ($jp) {
             $this->selectedId = $jp->id;
             $this->selectedLabel = $jp->name;
@@ -55,7 +56,7 @@ class JobPositionSelect extends Component
 
     public function getResultsProperty()
     {
-        return Job_position::query()
+        return JobPosition::query()
             ->when(
                 $this->search,
                 fn($q) =>

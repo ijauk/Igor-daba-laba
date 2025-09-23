@@ -14,7 +14,7 @@ class EmployeeSeeder extends Seeder
     {
 
         Employee::updateOrCreate([
-            'user_id' => 3,
+            'user_id' => 2,
             'email' => 'igor@example.com',
             'phone' => '123-456-7890',
             'first_name' => 'Igor',

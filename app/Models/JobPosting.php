@@ -3,10 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+/**
+ * @property \Illuminate\Support\Carbon|null $posted_at
+ * @property \Illuminate\Support\Carbon|null $expires_at
+ * @property \Illuminate\Support\Carbon|null $deadline
+ */
 class JobPosting extends Model
 {
     protected $fillable = ['title', 'description', 'posted_at', 'expires_at', 'deadline', 'is_valid', 'employee_id', 'job_position_id'];
+
+
 
     public function employee()
     {

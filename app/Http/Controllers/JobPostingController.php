@@ -17,9 +17,9 @@ class JobPostingController extends Controller
      */
     public function index()
     {
-        if (!Auth::check()) {
-                return redirect()->guest(route('login'));
-        }
+        // if (!Auth::check()) {
+        //         return redirect()->guest(route('login'));
+        // }
 
         $job_postings = JobPosting::all();
 
@@ -32,7 +32,7 @@ class JobPostingController extends Controller
     public function create()
     {
         if (!Auth::check()) {
-                return redirect()->guest(route('login'));
+            return redirect()->guest(route('login'));
         }
 
         $educations = Education::all();
@@ -157,7 +157,7 @@ class JobPostingController extends Controller
     public function edit(JobPosting $jobposting)
     {
         if (!Auth::check()) {
-               return redirect()->guest(route('login'));
+            return redirect()->guest(route('login'));
         }
 
         $educations = Education::all();
@@ -171,9 +171,9 @@ class JobPostingController extends Controller
             ? Employee::find($jobposting->employee_id)
             : null;
 
-        $selectedDate = $jobposting->posted_at->format('d.m.Y H:i');
-        $selectedExpiresAt = $jobposting->expires_at->format('d.m.Y');
-        $selectedDeadLine = $jobposting->deadline->format('d.m.Y H:i');
+        $selectedDate = $jobposting->posted_at?->format('d.m.Y H:i');
+        $selectedExpiresAt = $jobposting->expires_at?->format('d.m.Y');
+        $selectedDeadLine = $jobposting->deadline?->format('d.m.Y H:i');
 
 
 
