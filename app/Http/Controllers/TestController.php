@@ -10,4 +10,8 @@ class TestController extends Controller
     {
         return view('test.index');
     }
+    public function komp()
+    {
+        return view('test.komp');
+    }
 }

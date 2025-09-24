@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Job_posting;
+use App\Models\JobPosting;
 
 class Job_postingSeeder extends Seeder
 {
@@ -13,7 +13,7 @@ class Job_postingSeeder extends Seeder
      */
     public function run(): void
     {
-        Job_posting::updateOrCreate([
+        JobPosting::updateOrCreate([
             'title' => 'Software Developer',
             'description' => 'Develop and maintain web applications.',
             'posted_at' => now(),
@@ -22,7 +22,7 @@ class Job_postingSeeder extends Seeder
             'is_valid' => true,
             'employee_id' => 1, // assuming employee with ID 1 exists
         ]);
-        Job_posting::updateOrCreate([
+        JobPosting::updateOrCreate([
             'title' => 'Project Manager',
             'description' => 'Oversee project development and ensure timely delivery.',
             'posted_at' => now(),

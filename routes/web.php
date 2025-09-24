@@ -23,4 +23,13 @@ Route::get('/api/job-positions', [App\Http\Controllers\Api\JobPositionController
 Route::get('/api/employees', [App\Http\Controllers\Api\EmployeeController::class, 'index']);
 
 Route::get('/test', [App\Http\Controllers\TestController::class, 'index'])->name('test');
+Route::get('/testiraj-komponentu', [App\Http\Controllers\TestController::class, 'komp'])->name('komp');
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('employees', App\Http\Controllers\EmployeeController::class);
+    Route::resource('organizational-units', App\Http\Controllers\OrganizationalUnitController::class);
+    Route::resource('educations', App\Http\Controllers\EducationController::class);
+    Route::resource('job-positions', App\Http\Controllers\JobPositionController::class);
+    Route::resource('hiring-plans', App\Http\Controllers\HiringPlanController::class);
+});
 

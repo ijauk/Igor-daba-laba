@@ -6,3 +6,29 @@
 -   pokušavam izbjeći korištenje jQuerya, pa sam odabrao Tomselect.js, koji je plain js, a endopoint je isti kao i za select2
 
 -   potrebni su mali tvikovi da bi imao funkcionalnost 'load more' i da bi sjeo u bootstrap5 styling
+
+## Koraci
+
+```sh
+# Kreiranje komponente
+php artisan make:component install tom-select
+```
+
+-   ovo će kreirati:
+
+```
+resources/
+└── views/
+    └── components/
+        └── select/
+            ├── tom-select.blade.php
+
+app/
+└── View/
+    └── Components/
+        └── Select/
+            └── TomSelect.php
+public/
+└── js/
+    └── tom-select.js
+```

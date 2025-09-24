@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class JobPosition extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'description', 'min_salary', 'max_salary', 'is_active', 'education_id'];
+    protected $fillable = ['name', 'description', 'min_salary', 'max_salary', 'is_active', 'education_id', 'organizational_unit_id'];
     public function jobPostings()
     {
         return $this->hasMany(JobPosting::class, 'job_position_id');
@@ -16,5 +16,9 @@ class JobPosition extends Model
     public function organizationalUnit()
     {
         return $this->hasOne(OrganizationalUnit::class, 'id', 'organizational_unit_id');
+    }
+    public function hiringPlan()
+    {
+        return $this->belongsTo(HiringPlan::class, 'hiring_plan_id');
     }
 }
