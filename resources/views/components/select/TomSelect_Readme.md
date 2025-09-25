@@ -28,7 +28,7 @@ app/
     └── Components/
         └── Select/
             └── TomSelect.php
-public/
-└── js/
-    └── tom-select.js
+
 ```
+
+-   javascript se nalazi u samom tom-select.blade.php

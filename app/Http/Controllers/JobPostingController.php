@@ -40,15 +40,58 @@ class JobPostingController extends Controller
         // Inicijalno odabrana radna pozicija (ako je vraćeno iz validacije)
 
         $selectedJobPosition = null;
+
+        $selectedJobPositionId = null;
+        $jobPositionOptions = [];
+        //$jpLabel = null;
         if (old('job_position_id')) {
 
             $selectedJobPosition = JobPosition::find(old('job_position_id'));
+            $selectedJobPositionId = $selectedJobPosition?->id;
+            $jobPositionOptions = $selectedJobPosition
+                ? [$selectedJobPosition->id => $selectedJobPosition->label]
+                : [];
+            // za tomselect komponentu u blade-u pripremi labelu ako je odabrana radna pozicija a validacija nije prošla
+
+            // if ($selectedJobPosition) {
+            //     $ou = $selectedJobPosition->organizationalUnit;
+            //     //$jpLabel = ($ou?->code ? $ou->code . '.' : '') . ($selectedJobPosition->job_subnumber ?? '') . ' ' . ($selectedJobPosition->incumbent_subnumber ?? '') . ' ' . ($selectedJobPosition->name ?? '');
+            //     $jpLabel = $selectedJobPosition->label;
+
+            // }
+
+
+
         }
 
         $selectedEmployee = null;
+        $selectedEmployeeId = null;
+        $employeeOptions = [];
+
         if (old('employee_id')) {
             $selectedEmployee = Employee::find(old('employee_id'));
+            $employeeOptions = $selectedEmployee
+                ? [$selectedEmployee->id => $selectedEmployee->label]
+                : [];
+
+            $selectedEmployeeId = $selectedEmployee?->id;
+
+
         }
+
+        // opcija za multiple
+        /*
+        $selectedEmployees = $jobposting->employees()->get(); // Collection<Employee>
+
+// [id => label] mapa za preselect
+$employeeOptions = $selectedEmployees->pluck('label', 'id')->toArray();
+
+// Lista ID-eva za :selected
+$selectedEmployeeIds = $selectedEmployees->pluck('id')->toArray();
+
+return view('jobpostings.edit', compact('selectedEmployees','employeeOptions','selectedEmployeeIds'));
+
+        */
 
         $selectedDate = null;
         if (old('posted_at')) {
@@ -65,7 +108,8 @@ class JobPostingController extends Controller
             $selectedDeadLine = old('deadLine');
         }
 
-        return view('jobpostings.create', compact('educations', 'selectedJobPosition', 'selectedEmployee', 'selectedDate', 'selectedExpiresAt', 'selectedDeadLine'));
+
+        return view('jobpostings.create', compact('educations', 'selectedJobPosition', 'selectedEmployee', 'selectedDate', 'selectedExpiresAt', 'selectedDeadLine', 'selectedJobPositionId', 'jobPositionOptions', 'selectedEmployeeId', 'employeeOptions'));
 
 
     }

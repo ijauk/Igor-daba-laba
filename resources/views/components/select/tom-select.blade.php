@@ -1,15 +1,23 @@
 @php
+
+    // ako nije predan id, koristi name za <label for>
     $id = $id ?? $name;
+
+
+    // selected može bit scalar ili array
     // ako multiple i selected je scalar -> pretvori u array
     $selectedValues = is_array($selected) ? $selected : ($selected !== null ? [$selected] : []);
 @endphp
+
+
+{{-- ako je multiple true, onda u name dodajemo mulitle atribut--}}
 
 <select id="{{ $id }}" name="{{ $name }}{{ $multiple ? '[]' : '' }}" {{ $multiple ? 'multiple' : '' }}
     class="tomselect w-100" data-endpoint="{{ $endpoint }}" data-placeholder="{{ $placeholder }}"
     data-value-field="{{ $valueField }}" data-label-field="{{ $labelField }}" data-search-field="{{ $searchField }}"
     data-min-input-length="{{ (int) $minInputLength }}" data-max-options="{{ (int) $maxOptions }}"
     data-dropdown-parent="{{ $dropdownParent }}">
-    {{-- STATIČKE OPCIJE (ako ih predaš) --}}
+    {{-- ovo ako nema ajaxa (endpoint === null) --}}
     @if($endpoint === null && !empty($options))
         @foreach($options as $val => $label)
             <option value="{{ $val }}" @selected(in_array((string) $val, array_map('strval', $selectedValues)))>
@@ -39,8 +47,8 @@
 @endPushOnce
 
 @pushOnce('scripts')
-    {{-- Učitaj TomSelect bundle (pazi putanju) --}}
-    {{-- <script src="{{ asset('js/tom-select.complete.min.js') }}"></script> --}}
+    {{-- TomSelect.js i css je u layout file-u --}}
+
     <script>
         (function () {
             function initTomSelect(el) {

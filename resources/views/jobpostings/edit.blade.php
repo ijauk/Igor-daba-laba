@@ -27,8 +27,8 @@
                 <input id="posted_at" name="posted_at" type="text" class="form-control" data-td-target="#posted_at"
                     value="{{ old('posted_at', $selectedDate) }}" placeholder="dd.mm.yyyy HH:mm">
                 <span class="input-group-text" data-td-toggle="datetimepicker" data-td-target="#posted_at">
-                                      <i class="bi bi-calendar-date"></i>
-                                  </span>
+                                                  <i class="bi bi-calendar-date"></i>
+                                              </span>
             </div>
             @error('posted_at') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
         </div>
@@ -39,8 +39,8 @@
                 <input id="expires_at" name="expires_at" type="text" class="form-control" data-td-target="#expires_at"
                     value="{{ old('expires_at', $selectedExpiresAt) }}" placeholder="dd.mm.yyyy">
                 <span class="input-group-text" data-td-toggle="datetimepicker" data-td-target="#expires_at">
-                                      <i class="bi bi-calendar-date"></i>
-                                  </span>
+                                                  <i class="bi bi-calendar-date"></i>
+                                              </span>
             </div>
             @error('expires_at') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
         </div>
@@ -51,8 +51,8 @@
                 <input id="deadLine" name="deadLine" type="text" class="form-control" data-td-target="#deadLine"
                     value="{{ old('deadLine', $selectedDeadLine) }}" placeholder="dd.mm.yyyy HH:mm">
                 <span class="input-group-text" data-td-toggle="datetimepicker" data-td-target="#deadLine">
-                                      <i class="bi bi-calendar-date"></i>
-                                  </span>
+                                                  <i class="bi bi-calendar-date"></i>
+                                              </span>
             </div>
             @error('deadLine') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
         </div>
@@ -70,41 +70,43 @@
             </select>
             @error('education_id') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
         </div>
-
-        {{-- Job Position (Select2, ajax) --}}
         <div class="mb-3">
-            <label for="job_position_id" class="form-label">Pozicija</label>
-            <select id="job_position_id" class="form-select" name="job_position_id" placeholder="Traži i odaberi poziciju…">
-                @if(old('job_position_id'))
-                    <option value="{{ old('job_position_id') }}" selected>
-                        {{ optional($selectedJobPosition)->name }}
-                    </option>
-                @elseif(!empty($selectedJobPosition))
-                    <option value="{{ $selectedJobPosition->id }}" selected>
-                        {{ $selectedJobPosition->name }}
-                    </option>
-                @endif
-            </select>
-            @error('job_position_id') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
-        </div>
+            <label for="job_position_id" class="form-label">Pozicija (referenca)</label>
+            @php
+                // Definiraj labelu za preselect:
+                // ako želiš samo naziv pozicije: $jpLabel = $selectedJobPosition?->name ?? '';
+                // Ako želiš “bogatiji” label (OU + nazivi), složi ga ovdje:
+                $jpLabel = '';
+                if ($selectedJobPosition) {
+                    $ou = $selectedJobPosition->organizationalUnit ?? null; // ako ima relaciju
+                    $jpLabel = trim(collect([
+                        $ou?->code,                           // npr. OU3.1.1
+                        $selectedJobPosition->name,           // npr. Administrator
+                        $ou ? "({$ou->name})" : null          // npr. (Financije)
+                    ])->filter()->implode(' '));
+                }
+            @endphp
 
-        {{-- Employee (Select2, ajax) --}}
+            <x-select.tom-select name=" job_position_id" id="job_position_id" placeholder="Traži i odaberi poziciju…"
+                :endpoint="url('/api/job-positions')" {{-- tvoj API koji vraća {results:[{id,text}], pagination:{more}} --}}
+                value-field="id" label-field="text" search-field="text" :min-input-length="0" :max-options="50"
+                dropdown-parent="body" :selected="$selectedJobPosition?->id" 
+                :options="$selectedJobPosition ? [$selectedJobPosition->id => $selectedJobPosition->label] : []" />
+
+            @error('job_position_id')
+                <div class="text-danger small mt-1">{{ $message }}</div>
+            @enderror
+        </div>
         <div class="mb-3">
             <label for="employee_id" class="form-label">Zaposlenik (referenca)</label>
-            <select id="employee_id" class="form-select" name="employee_id" placeholder="Traži zaposlenika…">
-                @if(old('employee_id') && !empty($selectedEmployee))
-                    <option value="{{ old('employee_id') }}" selected>
-                        {{ $selectedEmployee->last_name }} {{ $selectedEmployee->first_name }}@if($selectedEmployee->email)
-                        &lt;{{ $selectedEmployee->email }}&gt;@endif
-                    </option>
-                @elseif(!empty($selectedEmployee))
-                    <option value="{{ $selectedEmployee->id }}" selected>
-                        {{ $selectedEmployee->last_name }} {{ $selectedEmployee->first_name }}@if($selectedEmployee->email)
-                        &lt;{{ $selectedEmployee->email }}&gt;@endif
-                    </option>
-                @endif
-            </select>
-            @error('employee_id') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+        <x-select.tom-select name="employee_id" id="employee_id" placeholder="Traži i odaberi zaposlenike…"
+            :endpoint="url('/api/employees')" {{-- ili route('api.employees') --}} value-field="id" label-field="text"
+            search-field="text" :min-input-length="0" :max-options="50" dropdown-parent="body" :multiple="false"
+            :selected="old('employee_id') ?? (isset($selectedEmployees) ? $selectedEmployees->pluck('id')->toArray() : [])"
+            :options="isset($selectedEmployees) ? $selectedEmployees->pluck('name', 'id')->toArray() : []" />
+        @error('employee_id')
+            <div class="text-danger small mt-1">{{ $message }}</div>
+        @enderror
         </div>
 
         <div class="mb-3 form-check">
@@ -119,62 +121,7 @@
 
 @push('scripts')
     <script>
-        $(function () {
-            // Select2: job positions
-            const $pos = $('#job_position_id');
-            $pos.select2({
-                theme: 'bootstrap-5',
-                width: '100%',
-                language: 'hr',
-                placeholder: 'Traži i odaberi poziciju…',
-                allowClear: true,
-                minimumInputLength: 0,
-                ajax: {
-                    url: '{{ url('/api/job-positions') }}',
-                    dataType: 'json',
-                    delay: 250,
-                    cache: true,
-                    data: function (params) {
-                        return { q: params.term || '', page: params.page || 1 };
-                    },
-                    processResults: function (data, params) {
-                        params.page = params.page || 1;
-                        return {
-                            results: data.results,
-                            pagination: { more: !!data.pagination?.more }
-                        };
-                    }
-                }
-            });
-
-            // Select2: employees
-            const $emp = $('#employee_id');
-            $emp.select2({
-                theme: 'bootstrap-5',
-                width: '100%',
-                language: 'hr',
-                placeholder: 'Traži zaposlenika…',
-                allowClear: true,
-                minimumInputLength: 0,
-                ajax: {
-                    url: '{{ url('/api/employees') }}',
-                    dataType: 'json',
-                    delay: 250,
-                    cache: true,
-                    data: function (params) {
-                        return { q: params.term || '', page: params.page || 1 };
-                    },
-                    processResults: function (data, params) {
-                        params.page = params.page || 1;
-                        return {
-                            results: data.results,
-                            pagination: { more: !!data.pagination?.more }
-                        };
-                    }
-                },
-                escapeMarkup: function (m) { return m; }
-            });
-
+        document.addEventListener('DOMContentLoaded', function () {
             // Tempus Dominus pickeri
             const postedAt = new tempusDominus.TempusDominus(document.getElementById('postedAtGroup'), {
                 localization: { locale: 'hr', startOfTheWeek: 1, format: 'dd.MM.yyyy HH:mm' },

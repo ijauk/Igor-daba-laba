@@ -34,8 +34,8 @@
                 <input id="posted_at" name="posted_at" type="text" class="form-control" data-td-target="#posted_at"
                     value="{{ old('posted_at') }}" placeholder="Odaberi datum i vrijeme" />
                 <span class="input-group-text" data-td-toggle="datetimepicker" data-td-target="#posted_at">
-                                  <i class="bi bi-calendar-date"></i>
-                                </span>
+                                                                              <i class="bi bi-calendar-date"></i>
+                                                                            </span>
             </div>
         </div>
 
@@ -45,8 +45,8 @@
                 <input id="expires_at" name="expires_at" type="text" class="form-control" data-td-target="#expires_at"
                     value="{{ old('expires_at') }}" placeholder="Odaberi datum" />
                 <span class="input-group-text" data-td-toggle="datetimepicker" data-td-target="#expires_at">
-                                  <i class="bi bi-calendar-date"></i>
-                                </span>
+                                                                              <i class="bi bi-calendar-date"></i>
+                                                                            </span>
             </div>
         </div>
 
@@ -56,8 +56,8 @@
                 <input id="deadLine" name="deadLine" type="text" class="form-control" data-td-target="#deadLine"
                     value="{{ old('deadLine') }}" placeholder="Odaberi datum i vrijeme" />
                 <span class="input-group-text" data-td-toggle="datetimepicker" data-td-target="#deadLine">
-                                  <i class="bi bi-calendar-date"></i>
-                                </span>
+                                                                              <i class="bi bi-calendar-date"></i>
+                                                                            </span>
             </div>
         </div>
         <div class="mb-3">
@@ -71,29 +71,28 @@
         </div>
 
         <div class="mb-3">
-            <label for="job_position_id" class="form-label">Pozicija</label>
-            <select id="job_position_id" class="form-select" name="job_position_id" placeholder="Traži i odaberi poziciju…">
-                @if(old('job_position_id') && $selectedJobPosition)
-                    <option value="{{ old('job_position_id') }}" selected>
-                        {{ $selectedJobPosition->name }}
-                    </option>
-                @endif
-            </select>
+            <label for="job_position_id" class="form-label">Pozicija (referenca)</label>
+
+
+            <x-select.tom-select name="job_position_id" id="job_position_id" placeholder="Traži i odaberi poziciju…"
+                :endpoint="url('/api/job-positions')" value-field="id" label-field="text" search-field="text"
+                :min-input-length="0" :max-options="50" dropdown-parent="body" :selected="old('job_position_id') ?? ($selectedJobPositionId)" :options="$jobPositionOptions" />
+            @error('job_position_id')
+                <div class="text-danger small mt-1">{{ $message }}</div>
+            @enderror
 
         </div>
 
         <div class="mb-3">
             <label for="employee_id" class="form-label">Zaposlenik (referenca)</label>
-            <select id="employee_id" class="form-select" name="employee_id" placeholder="Traži zaposlenika…">
-                @if(old('employee_id') && !empty($selectedEmployee))
-                    <option value="{{ old('employee_id') }}" selected>
-                        {{ $selectedEmployee->last_name }} {{ $selectedEmployee->first_name }}@if($selectedEmployee->email)
-                        &lt;{{ $selectedEmployee->email }}&gt;@endif
-                    </option>
-                @endif
-            </select>
+            <x-select.tom-select name="employee_id" id="employee_id" placeholder="Traži i odaberi zaposlenike…"
+                :endpoint="url('/api/employees')" {{-- ili route('api.employees') --}} value-field="id" label-field="text"
+                search-field="text" :min-input-length="0" :max-options="50" dropdown-parent="body" :multiple="false"
+                :selected="old('employee_id') ?? $selectedEmployeeId" :options="$employeeOptions" />
             @error('employee_id')
-                <div class="text-danger small mt-1">{{ $message }}</div>
+
+                <div class="text-danger small mt-1">{{ $message }} </div>
+
             @enderror
         </div>
 
@@ -108,81 +107,81 @@
 <!-- Select2 jer ne uspijevam podesiti tom-select -->
 @push('scripts')
     <script>
-        $(function () {
-            const $el = $('#job_position_id');
+        //$(function () {
+        //const $el = $('#job_position_id');
 
-            $el.select2({
-                theme: 'bootstrap-5',
-                width: '100%',
-                language: 'hr',
-                placeholder: 'Traži i odaberi poziciju…',
-                allowClear: true,
-                minimumInputLength: 0,   // prikaži i bez tipkanja (preporučujem 1 ako želiš)
-                ajax: {
-                    url: '{{ url('/api/job-positions') }}',
-                    dataType: 'json',
-                    delay: 250,
-                    cache: true,
-                    data: function (params) {
-                        return {
-                            q: params.term || '',
-                            page: params.page || 1
-                        };
-                    },
-                    processResults: function (data, params) {
-                        params.page = params.page || 1;
-                        return {
-                            results: data.results,                    // [{id,text},...]
-                            pagination: { more: !!data.pagination?.more }
-                        };
-                    }
-                }
-            });
+        // $el.select2({
+        //     theme: 'bootstrap-5',
+        //     width: '100%',
+        //     language: 'hr',
+        //     placeholder: 'Traži i odaberi poziciju…',
+        //     allowClear: true,
+        //     minimumInputLength: 0,   // prikaži i bez tipkanja (preporučujem 1 ako želiš)
+        //     ajax: {
+        //         url: '{{ url('/api/job-positions') }}',
+        //         dataType: 'json',
+        //         delay: 250,
+        //         cache: true,
+        //         data: function (params) {
+        //             return {
+        //                 q: params.term || '',
+        //                 page: params.page || 1
+        //             };
+        //         },
+        //         processResults: function (data, params) {
+        //             params.page = params.page || 1;
+        //             return {
+        //                 results: data.results,                    // [{id,text},...]
+        //                 pagination: { more: !!data.pagination?.more }
+        //             };
+        //         }
+        //     }
+        // });
 
-            // (Opcionalno) Ako želiš da otvaranje bez tipkanja odmah prikaže 1. stranicu:
-            $el.on('select2:opening', function () {
-                if (!$el.data('select2').$results.find('li').length) {
-                    $el.select2('open'); // trik koji triggera initial fetch
-                }
-            });
+        // // (Opcionalno) Ako želiš da otvaranje bez tipkanja odmah prikaže 1. stranicu:
+        // $el.on('select2:opening', function () {
+        //     if (!$el.data('select2').$results.find('li').length) {
+        //         $el.select2('open'); // trik koji triggera initial fetch
+        //     }
+        // });
 
-            // Employee Select2
-            const $emp = $('#employee_id');
-            $emp.select2({
-                theme: 'bootstrap-5',
-                width: '100%',
-                language: 'hr',
-                placeholder: 'Traži zaposlenika…',
-                allowClear: true,
-                minimumInputLength: 0,
-                ajax: {
-                    url: '{{ url('/api/employees') }}',
-                    dataType: 'json',
-                    delay: 250,
-                    cache: true,
-                    data: function (params) {
-                        return { q: params.term || '', page: params.page || 1 };
-                    },
-                    processResults: function (data, params) {
-                        params.page = params.page || 1;
-                        return {
-                            results: data.results,
-                            pagination: { more: !!data.pagination?.more }
-                        };
-                    }
-                },
-                // dopušta prikaz emaila u uglatim zagradama bez escape-a
-                escapeMarkup: function (m) { return m; }
-            });
+        // Employee Select2
+        //    const $emp = $('#employee_id');
+        //     $emp.select2({
+        //         theme: 'bootstrap-5',
+        //         width: '100%',
+        //         language: 'hr',
+        //         placeholder: 'Traži zaposlenika…',
+        //         allowClear: true,
+        //         minimumInputLength: 0,
+        //         ajax: {
+        //             url: '{{ url('/api/employees') }}',
+        //             dataType: 'json',
+        //             delay: 250,
+        //             cache: true,
+        //             data: function (params) {
+        //                 return { q: params.term || '', page: params.page || 1 };
+        //             },
+        //             processResults: function (data, params) {
+        //                 params.page = params.page || 1;
+        //                 return {
+        //                     results: data.results,
+        //                     pagination: { more: !!data.pagination?.more }
+        //                 };
+        //             }
+        //         },
+        //         // dopušta prikaz emaila u uglatim zagradama bez escape-a
+        //         escapeMarkup: function (m) { return m; }
+        //     });
 
-            // Opcionalno: inicijalni fetch na otvaranje bez tipkanja
-            $emp.on('select2:opening', function () {
-                if (!$emp.data('select2').$results.find('li').length) {
-                    $emp.select2('open');
-                }
-            });
+        //     // Opcionalno: inicijalni fetch na otvaranje bez tipkanja
+        //     $emp.on('select2:opening', function () {
+        //         if (!$emp.data('select2').$results.find('li').length) {
+        //             $emp.select2('open');
+        //         }
+        //     });
 
-        });
+        // });
     </script>
 @endpush
 

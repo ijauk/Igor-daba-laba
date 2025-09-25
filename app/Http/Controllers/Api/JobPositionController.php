@@ -30,16 +30,16 @@ class JobPositionController extends Controller
 
             // učitavanje podataka job position zajedno sa organizational unit za detaljniji
             // prikaz u select2/tomselect
-         
-            $query= JobPosition::query()
-            ->with('organizationalUnit') // eager loading relacije organizationalUnit
-            ->when($term, function ($q, $term) { // ovaj when je kao if, ako postoji search term, dodaj where
-                $q->where('name', 'like', "%{$term}%")
-                ->orWhereHas('organizationalUnit', function ($q) use ($term) {
-                    $q->where('name', 'like', "%{$term}%");
-                });
-            })
-            ->orderBy('name');
+
+            $query = JobPosition::query()
+                ->with('organizationalUnit') // eager loading relacije organizationalUnit
+                ->when($term, function ($q, $term) { // ovaj when je kao if, ako postoji search term, dodaj where
+                    $q->where('name', 'like', "%{$term}%")
+                        ->orWhereHas('organizationalUnit', function ($q) use ($term) {
+                        $q->where('name', 'like', "%{$term}%");
+                    });
+                })
+                ->orderBy('name');
 
             // a paginate je laravel metoda za paginaciju
             $paginator = $query->paginate($perPage, ['*'], 'page', $page);
@@ -47,7 +47,7 @@ class JobPositionController extends Controller
             return response()->json([
                 'results' => $paginator->getCollection()->map(fn($jp) => [ //mapira podakte u format koji Select2/TomSelect očekuje 
                     'id' => $jp->id,
-                    'text' => $jp->organizationalUnit->code . '.' . $jp->job_subnumber . '.' . $jp->incumbent_subnumber . ' ' . $jp->name . ($jp->organizationalUnit ? ' (' . $jp->organizationalUnit->name . ')' : ''),
+                    'text' => $jp->label// $jp->organizationalUnit->code . '.' . $jp->job_subnumber . '.' . $jp->incumbent_subnumber . ' ' . $jp->name . ($jp->organizationalUnit ? ' (' . $jp->organizationalUnit->name . ')' : ''),
                 ]),
                 'pagination' => [
                     'more' => $paginator->hasMorePages(),
