@@ -18,9 +18,11 @@ Route::resource('jobpostings', JobPostingController::class);
 // API ruta za dohvat radnih pozicija (za Select2/TomSelect)
 Route::get('/api/job-positions', [App\Http\Controllers\Api\JobPositionController::class, 'index']);
 
-
 // API ruta za dohvat zaposlenika (za Select2/TomSelect)
 Route::get('/api/employees', [App\Http\Controllers\Api\EmployeeController::class, 'index']);
+
+// API ruta za dohvat edukacija (za Select2/TomSelect)
+Route::get('/api/educations', [App\Http\Controllers\Api\EducationController::class, 'index']);
 
 Route::get('/test', [App\Http\Controllers\TestController::class, 'index'])->name('test');
 Route::get('/testiraj-komponentu', [App\Http\Controllers\TestController::class, 'komp'])->name('komp');

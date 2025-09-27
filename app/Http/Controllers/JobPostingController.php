@@ -104,12 +104,23 @@ return view('jobpostings.edit', compact('selectedEmployees','employeeOptions','s
         }
 
         $selectedDeadLine = null;
+    
         if (old('deadLine')) {
             $selectedDeadLine = old('deadLine');
         }
 
+        $selectedEducationId = null;
+        $educationOptions = [];
+        if (old('education_id')) {
+            $selectedEducation = Education::find(old('education_id'));
+            $educationOptions = $selectedEducation
+                ? [$selectedEducation->id => $selectedEducation->label]
+                : [];
+            $selectedEducationId = $selectedEducation?->id;
+        }
+       
 
-        return view('jobpostings.create', compact('educations', 'selectedJobPosition', 'selectedEmployee', 'selectedDate', 'selectedExpiresAt', 'selectedDeadLine', 'selectedJobPositionId', 'jobPositionOptions', 'selectedEmployeeId', 'employeeOptions'));
+        return view('jobpostings.create', compact('educations', 'selectedJobPosition', 'selectedEmployee', 'selectedDate', 'selectedExpiresAt', 'selectedDeadLine', 'selectedJobPositionId', 'jobPositionOptions', 'selectedEmployeeId', 'employeeOptions', 'selectedEducationId', 'educationOptions'));
 
 
     }

@@ -60,7 +60,7 @@
                                                                             </span>
             </div>
         </div>
-        <div class="mb-3">
+        <!-- <div class="mb-3">
             <label for="education_id" class="form-label">Obrazovna sprema</label>
             <select class="form-select" id="education_id" name="education_id">
                 <option value="" disabled selected>Odaberite obrazovnu spremu</option>
@@ -68,6 +68,18 @@
                     <option value="{{ $education->id }}">{{ $education->abbreviation }} - {{ $education->remark }}</option>
                 @endforeach
             </select>
+        </div> -->
+        <div class="mb-3">
+            <label for="education_id" class="form-label">Stupanj obrazovanja</label>
+
+
+            <x-select.tom-select name="education_id" id="education_id" placeholder="Traži i odaberi obrazovni stupanj…"
+                :endpoint="url('/api/educations')" value-field="id" label-field="text" search-field="text"
+                :min-input-length="0" :max-options="50" dropdown-parent="body" :selected="old('education_id') ?? ($selectedEducationId)" :options="$educationOptions" />
+            @error('education_id')
+                <div class="text-danger small mt-1">{{ $message }}</div>
+            @enderror
+
         </div>
 
         <div class="mb-3">
