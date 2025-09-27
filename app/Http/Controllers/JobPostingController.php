@@ -40,7 +40,6 @@ class JobPostingController extends Controller
         // Inicijalno odabrana radna pozicija (ako je vraćeno iz validacije)
 
         $selectedJobPosition = null;
-
         $selectedJobPositionId = null;
         $jobPositionOptions = [];
         //$jpLabel = null;
@@ -51,17 +50,6 @@ class JobPostingController extends Controller
             $jobPositionOptions = $selectedJobPosition
                 ? [$selectedJobPosition->id => $selectedJobPosition->label]
                 : [];
-            // za tomselect komponentu u blade-u pripremi labelu ako je odabrana radna pozicija a validacija nije prošla
-
-            // if ($selectedJobPosition) {
-            //     $ou = $selectedJobPosition->organizationalUnit;
-            //     //$jpLabel = ($ou?->code ? $ou->code . '.' : '') . ($selectedJobPosition->job_subnumber ?? '') . ' ' . ($selectedJobPosition->incumbent_subnumber ?? '') . ' ' . ($selectedJobPosition->name ?? '');
-            //     $jpLabel = $selectedJobPosition->label;
-
-            // }
-
-
-
         }
 
         $selectedEmployee = null;
@@ -75,8 +63,6 @@ class JobPostingController extends Controller
                 : [];
 
             $selectedEmployeeId = $selectedEmployee?->id;
-
-
         }
 
         // opcija za multiple
@@ -104,11 +90,12 @@ return view('jobpostings.edit', compact('selectedEmployees','employeeOptions','s
         }
 
         $selectedDeadLine = null;
-    
+
         if (old('deadLine')) {
             $selectedDeadLine = old('deadLine');
         }
 
+        $selectedEducation = null;
         $selectedEducationId = null;
         $educationOptions = [];
         if (old('education_id')) {
@@ -118,11 +105,9 @@ return view('jobpostings.edit', compact('selectedEmployees','employeeOptions','s
                 : [];
             $selectedEducationId = $selectedEducation?->id;
         }
-       
+
 
         return view('jobpostings.create', compact('educations', 'selectedJobPosition', 'selectedEmployee', 'selectedDate', 'selectedExpiresAt', 'selectedDeadLine', 'selectedJobPositionId', 'jobPositionOptions', 'selectedEmployeeId', 'employeeOptions', 'selectedEducationId', 'educationOptions'));
-
-
     }
 
     /**
@@ -206,7 +191,6 @@ return view('jobpostings.edit', compact('selectedEmployees','employeeOptions','s
     {
         dd($job_posting);
         return view('jobpostings.show', compact('job_posting'));
-
     }
 
     /**
@@ -236,8 +220,6 @@ return view('jobpostings.edit', compact('selectedEmployees','employeeOptions','s
 
 
         return view('jobpostings.edit', compact('jobposting', 'educations', 'selectedDate', 'selectedExpiresAt', 'selectedDeadLine', 'selectedJobPosition', 'selectedEmployee'));
-
-
     }
 
     /**

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\HiringPlan;
-
+use Illuminate\Support\Facades\Auth;
 class HiringPlanController extends Controller
 {
     /**
@@ -22,7 +22,7 @@ class HiringPlanController extends Controller
      */
     public function create()
     {
-        if (auth()->check()) {
+        if (Auth::check()) {
             return view('hiring_plans.create');
         } else {
             return redirect()->route('login')->with('error', 'Morate se prijaviti za pristup stranici.');
