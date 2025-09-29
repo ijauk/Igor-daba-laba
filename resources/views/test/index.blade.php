@@ -25,6 +25,9 @@
             <div class="text-danger small mt-1">{{ $message }}</div>
         @enderror
     </div>
+    <div class="mb-3">
+        
+    </div>
 @endsection
 @pushOnce('scripts')
     <script>
