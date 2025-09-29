@@ -45,7 +45,7 @@ class JobPositionController extends Controller
             $paginator = $query->paginate($perPage, ['*'], 'page', $page);
 
             return response()->json([
-                'results' => $paginator->getCollection()->map(fn($jp) => [ //mapira podakte u format koji Select2/TomSelect očekuje 
+                'results' => $paginator->getCollection()->map(fn($jp) => [ //mapira podakte u format koji Select2/TomSelect očekuje, getCollection vraća kolekciju rezultata iz paginacije
                     'id' => $jp->id,
                     'text' => $jp->label// $jp->organizationalUnit->code . '.' . $jp->job_subnumber . '.' . $jp->incumbent_subnumber . ' ' . $jp->name . ($jp->organizationalUnit ? ' (' . $jp->organizationalUnit->name . ')' : ''),
                 ]),

@@ -25,6 +25,29 @@
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css"
         rel="stylesheet">
 
+    {{-- Custom CSS for dropend submenus --}}
+    <style>
+        .dropend:hover .dropdown-menu {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 100%;
+            margin: 0;
+        }
+        
+        .dropend .dropdown-menu {
+            display: none;
+        }
+        
+        /* Ensure submenu appears on the right side */
+        .dropend .dropdown-toggle::after {
+            border-left: 0.3em solid;
+            border-right: 0;
+            border-bottom: 0.3em solid transparent;
+            border-top: 0.3em solid transparent;
+        }
+    </style>
+
     {{-- Page-specific styles (after vendor to allow overrides) --}}
     @stack('styles')
 
@@ -84,7 +107,7 @@
         
         <!-- Submenu: Plan zapošljavanja -->
         <li class="dropend">
-            <a class="dropdown-item dropdown-toggle" href="#" id="planDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="dropdown-item dropdown-toggle" href="#" id="planDropdown" role="button" aria-expanded="false">
                 Plan zapošljavanja
             </a>
             <ul class="dropdown-menu" aria-labelledby="planDropdown">
@@ -128,43 +151,6 @@
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 
     {{-- Livewire JS --}}
-    <script>
-        // Enable Bootstrap 5 submenus inside dropdowns (e.g., Plan zapošljavanja)
-        document.addEventListener('DOMContentLoaded', function () {
-            // Prevent parent dropdown from closing when toggling submenu
-            document.querySelectorAll('.dropdown-menu .dropdown-toggle').forEach(function (toggle) {
-                toggle.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    const subMenu = this.nextElementSibling;
-                    if (!subMenu) return;
-
-                    // Close any other open submenus at the same level
-                    const parentMenu = this.closest('.dropdown-menu');
-                    if (parentMenu) {
-                        parentMenu.querySelectorAll('.dropdown-menu.show').forEach(function (openMenu) {
-                            if (openMenu !== subMenu) openMenu.classList.remove('show');
-                        });
-                    }
-
-                    // Toggle current submenu
-                    subMenu.classList.toggle('show');
-                    const expanded = this.getAttribute('aria-expanded') === 'true';
-                    this.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-                });
-            });
-
-            // When parent dropdown hides, close any open submenus
-            document.querySelectorAll('.dropdown').forEach(function (dd) {
-                dd.addEventListener('hide.bs.dropdown', function () {
-                    this.querySelectorAll('.dropdown-menu.show').forEach(function (openMenu) {
-                        openMenu.classList.remove('show');
-                    });
-                });
-            });
-        });
-    </script>
     @livewireScripts
     <script>
         document.addEventListener('livewire:init', () => {

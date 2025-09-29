@@ -10,7 +10,8 @@ class EmployeeController extends Controller
 {
     public function index(Request $request)
     {
-        // Implementacija metode za dohvat zaposlenika
+      try {
+
         $term = $request->get('q');
         $page = (int) $request->get('page', 1);
         $perPage = (int) $request->get('per_page', 10);
@@ -39,4 +40,11 @@ class EmployeeController extends Controller
             ],
         ]);
     }
+    catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Došlo je do greške prilikom dohvaćanja zaposlenika.',
+            'message' => $e->getMessage(),
+        ], 500);
+    }
+}
 }
