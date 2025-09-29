@@ -4,6 +4,10 @@
     <form action="{{ route('hiring-plans.store') }}" method="POST">
         @csrf
         <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+        <div class="mb-3">
             <label for="valid_from" class="form-label">Valid From</label>
             <input type="date" class="form-control" id="valid_from" name="valid_from" required>
         </div>

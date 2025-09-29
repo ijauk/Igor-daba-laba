@@ -65,7 +65,7 @@ class JobPostingController extends Controller
             $selectedEmployeeId = $selectedEmployee?->id;
         }
 
-        // opcija za multiple
+        // opcija akk uključim opciju multiple
         /*
         $selectedEmployees = $jobposting->employees()->get(); // Collection<Employee>
 
