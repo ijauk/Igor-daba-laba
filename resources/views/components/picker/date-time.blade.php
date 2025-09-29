@@ -1,6 +1,6 @@
 @php
 
-    $id = $id ?? $name;
+$id = $id ?? $name;
 @endphp
 
 <div class="td-wrapper w-100" data-dropdown-parent="{{ $dropdownParent }}">
@@ -25,119 +25,219 @@
             data-buttons-clear="{{ $buttonsClear ? 'true' : 'false' }}"
             data-buttons-close="{{ $buttonsClose ? 'true' : 'false' }}"
             autocomplete="{{ $autocomplete }}"
+            data-mode="{{ $mode }}"
+            data-restrict-past="{{ $restrictPast ? 'true' : 'false' }}"
+            data-link-min="{{ $linkMinTo }}"
+            data-link-max="{{ $linkMaxTo }}"
+            data-use-bootstrap-icons="{{ $useBootstrapIcons ? 'true' : 'false' }}"
             {{ $readonly ? 'readonly' : '' }}
             {{ $disabled ? 'disabled' : '' }}
-            {{ $required ? 'required' : '' }}
-        />
+            {{ $required ? 'required' : '' }} />
         <span class="input-group-text" data-td-toggle="datetimepicker" data-td-target="#{{ $id }}">
             <i class="bi bi-calendar-event"></i>
         </span>
     </div>
     @error($name)
-        <div class="invalid-feedback d-block">{{ $message }}</div>
+    <div class="invalid-feedback d-block">{{ $message }}</div>
     @enderror
 </div>
 
 @pushOnce('styles')
 <style>
-/* osiguraj da overlay probije modal / dropdown stacking */
-.tempus-dominus-widget {
-    z-index: 2000 !important;
-}
+    /* osiguraj da overlay probije modal / dropdown stacking */
+    .tempus-dominus-widget {
+        z-index: 2000 !important;
+    }
 </style>
 @endPushOnce
 
 @pushOnce('scripts')
 <script>
-(function () {
-    function initTd(input) {
-        if (!window.tempusDominus) {
-            console.error('Tempus Dominus nije učitan.');
-            return;
-        }
+    (function() {
+        function initTd(el) {
+            if (!window.tempusDominus) {
+                console.error('Tempus Dominus nije učitan.');
+                return;
+            }
 
-        const ds = input.dataset;
+            const ds = el.dataset;
 
-        const opts = {
-            localization: {
-                locale: 'hr',             // hr-HR locale (učitaj prije ako koristiš lokalizaciju iz njihovog paketa)
-                startOfTheWeek: 1,        // ponedjeljak
-            },
-            display: {
-                components: {
-                    calendar: true,
-                    date: true,
-                    month: true,
-                    year: true,
-                    decades: true,
-                    clock: true,
-                    hours: true,
-                    minutes: true,
-                    seconds: (ds.useSeconds === 'true'),
+            const opts = {
+                localization: {
+                    locale: 'hr', // hr-HR locale (učitaj prije ako koristiš lokalizaciju iz njihovog paketa)
+                    startOfTheWeek: 1, // ponedjeljak
                 },
-                sideBySide: (ds.sideBySide === 'true'),
-                buttons: {
-                    today: (ds.buttonsToday === 'true'),
-                    clear: (ds.buttonsClear === 'true'),
-                    close: (ds.buttonsClose === 'true'),
+                display: {
+                    components: {
+                        calendar: true,
+                        date: true,
+                        month: true,
+                        year: true,
+                        decades: true,
+                        clock: true,
+                        hours: true,
+                        minutes: true,
+                        seconds: (ds.useSeconds === 'true'),
+                    },
+                    // icons: {
+                    //     type: 'icons',
+                    //     time: 'bi bi-clock',
+                    //     date: 'bi bi-calendar',
+                    //     up: 'bi bi-chevron-up',
+                    //     down: 'bi bi-chevron-down',
+                    //     previous: 'bi bi-chevron-left',
+                    //     next: 'bi bi-chevron-right',
+                    //     today: 'bi bi-calendar-check',
+                    //     clear: 'bi bi-trash',
+                    //     close: 'bi bi-x-lg'
+                    // },
+
+                    sideBySide: (ds.sideBySide === 'true'),
+                    buttons: {
+                        today: (ds.buttonsToday === 'true'),
+                        clear: (ds.buttonsClear === 'true'),
+                        close: (ds.buttonsClose === 'true'),
+                    },
+                    theme: 'auto',
+                    // format prikaza u inputu
+                    // Napomena: v6 koristi Intl/Formatter, patterni su približno kao u docs; prilagodi po potrebi
+                    keepOpen: (ds.keepOpen === 'true'),
                 },
-                theme: 'auto',
-                // format prikaza u inputu
-                // Napomena: v6 koristi Intl/Formatter, patterni su približno kao u docs; prilagodi po potrebi
-                keepOpen: (ds.keepOpen === 'true'),
-            },
-            stepping: parseInt(ds.stepping || '5', 10),
-            useCurrent: false,
-        };
+                stepping: parseInt(ds.stepping || '5', 10),
+                useCurrent: false,
+            };
 
-        // format zapisa u inputu – možeš i custom formatter ako koristiš Luxon/Day.js
-        const displayFormat = ds.displayFormat || ds.format || 'yyyy-MM-dd HH:mm';
+            // format zapisa u inputu – možeš i custom formatter ako koristiš Luxon/Day.js
+            const displayFormat = ds.displayFormat || ds.format || 'yyyy-MM-dd HH:mm';
 
-        // Min/Max
-        if (ds.minDate) opts.restrictions = Object.assign({}, opts.restrictions, { minDate: new Date(ds.minDate) });
-        if (ds.maxDate) opts.restrictions = Object.assign({}, opts.restrictions, { maxDate: new Date(ds.maxDate) });
 
-        // 24h sat
-        if (ds.use24Hours === 'true') {
-            opts.localization = Object.assign({}, opts.localization, { hourCycle: 'h23' });
-        }
+            const mode = (ds.mode || 'datetime');
+            const restrictPast = (ds.restrictPast === 'true');
+            const linkMin = ds.linkMin || null;
+            const linkMax = ds.linkMax || null;
+            const useBootstrapIcons = (ds.useBootstrapIcons === 'true');
 
-        // Init
-        const picker = new tempusDominus.TempusDominus(input, Object.assign({}, opts, {
-            display: Object.assign({}, opts.display, {
-                // TD v6 koristi `display.components` + `localization` + `format`
-                // Ako želiš striktno zadati format:
-                // format: displayFormat
-                // Ako želiš prepustiti locale formatteru, izostavi line iznad.
-                // U praksi – često je dovoljno samo `format: displayFormat`.
+            // Min/Max
+            if (ds.minDate) opts.restrictions = Object.assign({}, opts.restrictions, {
+                minDate: new Date(ds.minDate)
+            });
+            if (ds.maxDate) opts.restrictions = Object.assign({}, opts.restrictions, {
+                maxDate: new Date(ds.maxDate)
+            });
+
+            if (restrictPast) {
+                const now = new Date();
+                opts.restrictions = Object.assign({}, opts.restrictions, {
+                    minDate: now
+                });
+            }
+
+
+            if (mode === 'date') {
+                opts.display.components.clock = false;
+                opts.display.components.hours = false;
+                opts.display.components.minutes = false;
+                opts.display.components.seconds = false;
+            }
+
+            // 24h sat
+            if (ds.use24Hours === 'true') {
+                opts.localization = Object.assign({}, opts.localization, {
+                    hourCycle: 'h23'
+                });
+            }
+            if (useBootstrapIcons) {
+                opts.display = Object.assign({}, opts.display, {
+                    icons: {
+                        type: 'icons',
+                        time: 'bi bi-clock',
+                        date: 'bi bi-calendar',
+                        up: 'bi bi-chevron-up',
+                        down: 'bi bi-chevron-down',
+                        previous: 'bi bi-chevron-left',
+                        next: 'bi bi-chevron-right',
+                        today: 'bi bi-calendar-check',
+                        clear: 'bi bi-trash',
+                        close: 'bi bi-x-lg'
+                    }
+                });
+            }
+
+
+            // Init
+            opts.localization = Object.assign({}, opts.localization, {
                 format: displayFormat
-            })
-        }));
+            });
+            const picker = new tempusDominus.TempusDominus(el, opts);
 
-        // Prethodno postavljena vrijednost (ako postoji)
-        if (input.value) {
-            try { picker.dates.setValue(new Date(input.value)); } catch (e) {}
+            let currentRestrictions = Object.assign({}, opts.restrictions || {});
+
+            // Prethodno postavljena vrijednost (ako postoji)
+            if (el.value) {
+                try {
+                    picker.dates.setValue(new Date(el.value));
+                } catch (e) {}
+            }
+
+            // Event – ažuriraj input on change
+            el.addEventListener('change.td', (ev) => {
+                // ev.target.value već sadrži string po formatu
+                // Ako trebaš dodatni hidden input s ISO zapisom, ovdje ga možeš postaviti.
+            });
+
+            // Debug hook
+            window['td_' + (el.id || el.name)] = picker;
+
+            function getPickerById(id) {
+                return window['td_' + id];
+            }
+
+            if (linkMin) {
+                const src = getPickerById(linkMin);
+                if (src) {
+                    src.subscribe(tempusDominus.Namespace.events.change, (e) => {
+                        if (e && e.date) {
+                            currentRestrictions.minDate = e.date;
+                            picker.updateOptions({
+                                restrictions: currentRestrictions   
+                            });
+                        }
+                    });
+                }
+            }
+
+            if (linkMax) {
+                const src = getPickerById(linkMax);
+                if (src) {
+                    src.subscribe(tempusDominus.Namespace.events.change, (e) => {
+                        if (e && e.date) {
+                            currentRestrictions.maxDate = e.date;
+                            picker.updateOptions({ restrictions: currentRestrictions });
+
+                            // picker.updateOptions({
+
+                                
+                            //     restrictions: Object.assign({}, picker.options.restrictions, {
+                            //         maxDate: e.date
+                            //     })
+                            // });
+                        }
+                    });
+                }
+            }
         }
 
-        // Event – ažuriraj input on change
-        input.addEventListener('change.td', (ev) => {
-            // ev.target.value već sadrži string po formatu
-            // Ako trebaš dodatni hidden input s ISO zapisom, ovdje ga možeš postaviti.
-        });
+        function boot() {
+            document.querySelectorAll('input.td-input, .td-wrapper input.td-input').forEach(initTd);
+        }
 
-        // Debug hook
-        window['td_' + (input.id || input.name)] = picker;
-    }
-
-    function boot() {
-        document.querySelectorAll('input.td-input, .td-wrapper input.td-input').forEach(initTd);
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', boot, { once: true });
-    } else {
-        boot();
-    }
-})();
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', boot, {
+                once: true
+            });
+        } else {
+            boot();
+        }
+    })();
 </script>
 @endPushOnce

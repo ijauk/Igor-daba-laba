@@ -21,10 +21,8 @@
     @enderror
 
     <h1>Tempus Dominus datetime picker</h1>
-    <x-picker.date-time name="test_dt" display-format="dd.MM.yyyy" format="yyyy-MM-dd HH:mm" />
+    
     <x-picker.date-time name="datum_rodjenja" id="datum_rodjenja" placeholder="Odaberi datum i vrijeme" format="yyyy-MM-dd HH:mm" display-format="dd.MM.yyyy HH:mm" :value="old('datum_rodjenja')" :min-date="null" :max-date="null" :use-seconds="false" :use-24-hours="true" :stepping="5" :buttons-today="true" :buttons-clear="true" :buttons-close="true" :dropdown-parent="'body'" />
-    @error('datum_rodjenja')
-        <div class="text-danger small mt-1">{{ $message }}</div>
-    @enderror
+
 
 @endsection

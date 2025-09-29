@@ -17,8 +17,9 @@
         href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css">
 
     {{-- Tempus Dominus (datetime picker) --}}
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6/dist/css/tempus-dominus.min.css" />
+
+    <link rel="stylesheet" 
+    href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.7.16/dist/css/tempus-dominus.min.css">
 
     {{-- Bootstrap Icons (optional, for calendar icon) --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
@@ -54,8 +55,7 @@
     {{-- CSRF for AJAX --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    {{-- Livewire CSS --}}
-    @livewireStyles
+  
 </head>
 
 <body class="bg-light">
@@ -146,17 +146,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
 
     {{-- Tempus Dominus --}}
-    <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6/dist/js/tempus-dominus.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.7.16/dist/js/tempus-dominus.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 
     {{-- Livewire JS --}}
-    @livewireScripts
-    <script>
-        document.addEventListener('livewire:init', () => {
-            console.log('✅ Livewire init OK');
-        });
-    </script>
+    
 
     {{-- Page-specific scripts (can rely on all vendor libs above) --}}
     @stack('scripts')

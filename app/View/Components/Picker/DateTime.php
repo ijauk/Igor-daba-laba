@@ -11,7 +11,7 @@ class DateTime extends Component
     /**
      * Create a new component instance.
      */
-     public string $name;
+    public string $name;
     public string $id;
     public ?string $value;
     public string $placeholder;
@@ -32,6 +32,14 @@ class DateTime extends Component
     public bool $disabled;
     public bool $required;
     public string $autocomplete;
+    public string $mode;
+    public bool $restrictPast; // ako želim ograničiti odabir na buduće datume
+
+    // ako želim linkati na druge pickere koji ograničavaju odabir (npr. datum završetka ne može biti prije datuma početka)
+    // postavljam linkMinTo i linkMaxTo na ID drugih pickera
+    public string $linkMinTo;
+    public string $linkMaxTo;
+    public bool $useBootstrapIcons = true;
     public function __construct(
         string $name,
         ?string $id = null,
@@ -53,7 +61,13 @@ class DateTime extends Component
         bool $readonly = false,
         bool $disabled = false,
         bool $required = false,
-        string $autocomplete = 'off'
+        string $autocomplete = 'off',
+        string $mode = 'datetime',
+        bool $restrictPast = false,
+        string $linkMinTo = '',
+        string $linkMaxTo = '',
+        bool $useBootstrapIcons = true
+    
 
     )
     {
@@ -78,6 +92,12 @@ class DateTime extends Component
         $this->disabled = $disabled;
         $this->required = $required;
         $this->autocomplete = $autocomplete;
+        $this->displayFormat = $displayFormat ?? $format;
+        $this->useBootstrapIcons = $useBootstrapIcons;
+        $this->restrictPast = $restrictPast;
+        $this->linkMinTo = $linkMinTo;
+        $this->linkMaxTo = $linkMaxTo;
+        $this->mode = $mode;
     }
 
     /**

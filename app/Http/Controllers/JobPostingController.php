@@ -167,7 +167,7 @@ return view('jobpostings.edit', compact('selectedEmployees','employeeOptions','s
         $validatedData['posted_at'] = $postedAt->format('Y-m-d H:i:s');
         $validatedData['expires_at'] = $expiresAt->format('Y-m-d');
         $validatedData['deadLine'] = $deadLine->format('Y-m-d H:i:s');
-
+       
         JobPosting::create([
             'title' => $validatedData['title'],
             'description' => $validatedData['description'],
@@ -187,9 +187,9 @@ return view('jobpostings.edit', compact('selectedEmployees','employeeOptions','s
     /**
      * Display the specified resource.
      */
-    public function show(JobPosting $job_posting)
+    public function show(JobPosting $jobposting)
     {
-        dd($job_posting);
+        dd($jobposting);
         return view('jobpostings.show', compact('job_posting'));
     }
 
@@ -201,8 +201,11 @@ return view('jobpostings.edit', compact('selectedEmployees','employeeOptions','s
         if (!Auth::check()) {
             return redirect()->guest(route('login'));
         }
-
-        $educations = Education::all();
+        dd($jobposting);
+        $selectedEducation = $jobposting->education_id
+            ? Education::find($jobposting->education_id)
+            : null;
+        //$educations = Education::all();
 
 
         $selectedJobPosition = $jobposting->job_position_id
@@ -217,9 +220,9 @@ return view('jobpostings.edit', compact('selectedEmployees','employeeOptions','s
         $selectedExpiresAt = $jobposting->expires_at?->format('d.m.Y');
         $selectedDeadLine = $jobposting->deadline?->format('d.m.Y H:i');
 
+        dd($selectedEducation, $selectedJobPosition, $selectedEmployee);
 
-
-        return view('jobpostings.edit', compact('jobposting', 'educations', 'selectedDate', 'selectedExpiresAt', 'selectedDeadLine', 'selectedJobPosition', 'selectedEmployee'));
+        return view('jobpostings.edit', compact('jobposting', 'selectedEducation', 'selectedDate', 'selectedExpiresAt', 'selectedDeadLine', 'selectedJobPosition', 'selectedEmployee'));
     }
 
     /**
