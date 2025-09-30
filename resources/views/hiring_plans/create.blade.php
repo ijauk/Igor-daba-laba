@@ -8,12 +8,28 @@
             <input type="text" class="form-control" id="title" name="title" required>
         </div>
         <div class="mb-3">
-            <label for="valid_from" class="form-label">Valid From</label>
-            <input type="date" class="form-control" id="valid_from" name="valid_from" required>
+            <label for="valid_from" class="form-label">Valid From
+           <x-picker.date-time
+                    name="valid_from"
+                    id="valid_from"
+                    :value="old('valid_from')"
+                    display-format="dd.MM.yyyy"
+                    format="yyyy-MM-dd"
+                    mode="date"
+                    :keep-open="false"/>     
+        </label>
         </div>
         <div class="mb-3">
-            <label for="valid_to" class="form-label">Valid To</label>
-            <input type="date" class="form-control" id="valid_to" name="valid_to" required>
+            <label for="valid_to" class="form-label">Valid To
+            <x-picker.date-time
+                    name="valid_to"
+                    id="valid_to"
+                    :value="old('valid_to')"
+                    display-format="dd.MM.yyyy"
+                    format="yyyy-MM-dd"
+                    mode="date"
+                    :keep-open="false"/>
+                    </label>
         </div>
         <div class="mb-3">
             <label for="description" class="form-label">Description</label>

@@ -1,0 +1,24 @@
+# Hiring Plan (HirinigPlan)
+- predstavlja plan zapošljavanja
+- predstavlja dokument sa osnovnim atributima
+  - id
+  - tilte -> naziv 
+  - valid_from - > početak važenja dokumenta
+  - valid_to -> kraj važenja dokumenta
+  - description -> opis
+  - active -> dokument je trenutno važeći
+  # HirinPlanItem
+  - predstavlja pojedinu stavku plana zapošljavanja
+    - id
+    - name -> naziv stavke
+    - description -> opis stavke
+    - quantity -> količina | izraženeo u ondosu na puno radno vrijeme; default 1.0. Ako neko radno mjesto predviđa manje ili više radnih sati, upisuje se odgovarajuća vrijednost (0,5 = 4 sata)
+    - target date -> ciljani datum |  ciljani rok za završtetak
+    - job_position_id -> veza sa sistematizacijom
+    - hiring_plan_id -> veza sa planom zapošljavanja
+    - status - > enum 'planned, in_progress, hired, canceled)
+    - notes -> bilješke
+    - snap_name
+    - snap_organizational_unit_id
+    - snap_education_id
+    - 
