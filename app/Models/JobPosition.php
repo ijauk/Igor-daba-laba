@@ -21,9 +21,9 @@ class JobPosition extends Model
     {
         return $this->hasOne(OrganizationalUnit::class, 'id', 'organizational_unit_id');
     }
-    public function hiringPlan()
+   public function hiringPlanItem()
     {
-        return $this->belongsTo(HiringPlan::class, 'hiring_plan_id');
+         return $this->hasMany(HiringPlanItem::class, 'job_position_id');    
     }
     public function getLabelAttribute(): string
     {

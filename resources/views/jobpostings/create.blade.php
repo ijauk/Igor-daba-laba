@@ -121,6 +121,7 @@
     </div>
 
     <div class="mb-3 form-check">
+        <input type="hidden" name="is_valid" value="0">
         <input type="checkbox" class="form-check-input" id="is_valid" name="is_valid" value="1">
         <label class="form-check-label" for="is_valid">Oglas je važeći</label>
     </div>

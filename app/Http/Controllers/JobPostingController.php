@@ -115,7 +115,7 @@ return view('jobpostings.edit', compact('selectedEmployees','employeeOptions','s
      */
     public function store(Request $request)
     {
-        //dd($request->all());
+        dd($request->all());
         $validatedData = $request->validate(
             [
                 'title' => ['required', 'string', 'max:255'],

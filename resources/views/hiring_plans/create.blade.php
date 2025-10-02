@@ -1,14 +1,28 @@
 @extends('layouts.app')
+@section('title', 'Kreiraj plan zapošljavanja')
+@if ($errors->any())
+<div class="alert alert-danger">
+    <ul>
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
 @section('content')
-    <h1>Create Hiring Plan</h1>
+
     <form action="{{ route('hiring-plans.store') }}" method="POST">
         @csrf
         <div class="mb-3">
-            <label for="title" class="form-label">Title</label>
-            <input type="text" class="form-control" id="title" name="title" required>
+            <label for="title" class="form-label">Naziv
+            <input type="text" class="form-control" id="title" name="title" >
+            </label>
+            @error('title')
+            <div class="text-danger small mt-1">{{ $message }}</div>
+            @enderror
         </div>
         <div class="mb-3">
-            <label for="valid_from" class="form-label">Valid From
+            <label for="valid_from" class="form-label">Vrijedi od
            <x-picker.date-time
                     name="valid_from"
                     id="valid_from"
@@ -20,7 +34,7 @@
         </label>
         </div>
         <div class="mb-3">
-            <label for="valid_to" class="form-label">Valid To
+            <label for="valid_to" class="form-label">Vrijedi do
             <x-picker.date-time
                     name="valid_to"
                     id="valid_to"
@@ -32,13 +46,18 @@
                     </label>
         </div>
         <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
-            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+            <label for="description" class="form-label">Opis
+            <textarea class="form-control" id="description" name="description" rows="3" ></textarea>
+        </label>
+        @error('description')
+            <div class="text-danger small mt-1">{{ $message }}</div>
+        @enderror
         </div>
         <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="active" name="active">
-            <label class="form-check-label" for="active">Active</label>
+            <input type="hidden" name="active" value="0">
+            <input type="checkbox" class="form-check-input" id="active" name="active" value="1" {{ old('active') ? 'checked' : '' }}    >
+            <label class="form-check-label" for="active">Aktivan</label>
         </div>
-        <button type="submit" class="btn btn-primary">Create</button>
+        <button type="submit" class="btn btn-primary">Kreiraj</button>
     </form>
 @endsection

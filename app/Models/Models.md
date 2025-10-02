@@ -7,7 +7,7 @@
   - valid_to -> kraj važenja dokumenta
   - description -> opis
   - active -> dokument je trenutno važeći
-  # HirinPlanItem
+# HiringPlanItem
   - predstavlja pojedinu stavku plana zapošljavanja
     - id
     - name -> naziv stavke
